@@ -1,0 +1,211 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/todolists/{todo_list_id}/todos":
+    get:
+      summary: Retrieve todo list items
+      tags:
+      - Todo list items
+      parameters:
+      - name: todo_list_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Todo list found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/todo_item"
+        '404':
+          description: Todo list not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    post:
+      summary: Create a todo list item
+      tags:
+      - Todo list items
+      parameters:
+      - name: todo_list_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/todo_item"
+        '422':
+          description: Failed to create todo list item
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_message"
+        '404':
+          description: Todo list not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_message"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/todo_item_params"
+  "/api/todolists/{todo_list_id}/todos/{id}":
+    patch:
+      summary: Update a todo list item
+      tags:
+      - Todo list items
+      parameters:
+      - name: todo_list_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/todo_item"
+        '422':
+          description: Failed to update todo list item
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_message"
+        '404':
+          description: Todo list item not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_message"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/todo_item_params"
+    delete:
+      summary: Delete a todo list item
+      tags:
+      - Todo list items
+      parameters:
+      - name: todo_list_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Todo list item not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_message"
+  "/api/todolists/{todo_list_id}/todos/{id}/complete":
+    patch:
+      summary: Mark a todo list item as completed
+      tags:
+      - Todo list items
+      parameters:
+      - name: todo_list_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/todo_item"
+        '404':
+          description: Todo list item not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_message"
+  "/api/todolists":
+    get:
+      summary: Retrieves todo lists
+      tags:
+      - Todo lists
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+servers:
+- url: http://localhost:3000
+  variables: {}
+components:
+  schemas:
+    error_message:
+      type: object
+      properties:
+        message:
+          type: string
+    todo_item:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        completed:
+          type: boolean
+        completed_at:
+          type: datetime
+    todo_item_params:
+      type: object
+      properties:
+        description:
+          type: string
+        completed:
+          type: boolean
+      required:
+      - description
